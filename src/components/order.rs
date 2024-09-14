@@ -1,6 +1,13 @@
 pub struct OrderEntry {
+    pub number:u32,
     pub hex: String,
     pub patternhexes: Vec<String>,
+}
+
+impl OrderEntry{
+    pub fn new()->Self{
+        Self { number: 0, hex: "".to_string(), patternhexes: vec![] }
+    }
 }
 
 pub struct Order {
@@ -8,7 +15,7 @@ pub struct Order {
 }
 
 impl Order{
-    pub fn new()->Self{
-        Self { orders: vec![] }
+    pub fn new(orders:Vec<OrderEntry>)->Self{
+        Self { orders }
     }
 }

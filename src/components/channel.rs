@@ -1,12 +1,14 @@
 use crate::components::cell::Cell;
 pub struct Channel {
     pub pattern_hex: String,
+    pub cells: Vec<Cell>
 }
 
 impl Channel {
-    pub fn new() -> Self {
+    pub fn new(pattern_hex:String) -> Self {
         return Self {
-            pattern_hex: "".to_string(),
+            pattern_hex,
+            cells: vec![]
         };
     }
     pub fn parse_row(row: &str) -> Vec<Cell> {
