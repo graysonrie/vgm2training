@@ -1,14 +1,14 @@
 use crate::components::cell::Cell;
 pub struct Channel {
     pub pattern_hex: String,
-    pub cells: Vec<Cell>
+    pub cells: Vec<Cell>,
 }
 
 impl Channel {
-    pub fn new(pattern_hex:String) -> Self {
+    pub fn new(pattern_hex: String) -> Self {
         return Self {
             pattern_hex,
-            cells: vec![]
+            cells: vec![],
         };
     }
     pub fn parse_row(row: &str) -> Vec<Cell> {
@@ -30,31 +30,46 @@ impl Channel {
 
             let split_space: Vec<&str> = c.split_whitespace().collect();
             if let Some(note) = split_space.get(0) {
-                cell.note = String::from(&note[0..2]);
-                if cell.note.ends_with("-") {
-                    cell.note = cell.note[0..1].to_string();
+                let cellnote = String::from(&note[0..2]);
+                // ensure that it also isn't a note break
+                if cellnote.ends_with("-") && cellnote != "--" {
+                    cell.note = Some(cellnote[0..1].to_string());
+                } else if cellnote == ".." {
+                    cell.note = None;
+                } else {
+                    cell.note = Some(cellnote);
                 }
-                if cell.note == ".." {
-                    cell.note = String::from("");
+                let oct_val = note.chars().nth(2);
+                if let Some(oct) = oct_val {
+                    if oct == '.' || oct == '-' || oct == '=' {
+                        // don't count note breaks, note releases, or lacks of notes
+                    } else {
+                        cell.note_octave = oct_val;
+                    }
                 }
-                cell.note_octave = note.chars().nth(2).unwrap().to_digit(10).unwrap_or(0);
+                //println!("{:#?}", note);
             }
             if let Some(instr) = split_space.get(1) {
                 if instr == &"." {
-                    cell.instrument = "prev".to_string();
+                    cell.instrument = None;
                 } else {
-                    cell.instrument = instr.to_string();
+                    cell.instrument = Some(instr.to_string());
                 }
             }
             if let Some(vol) = split_space.get(2) {
                 if vol == &"." {
-                    cell.note_volume = "prev".to_string();
+                    cell.note_volume = None;
                 } else {
-                    cell.note_volume = vol.to_string();
+                    cell.note_volume = Some(vol.to_string());
                 }
             }
-            for remainder in &cell_split[3..] {
-                cell.fx.push(remainder.to_string());
+            for remainder in &split_space[3..] {
+                //println!("{}",remainder);
+                if remainder == &"..." {
+                    cell.fx.push(None);
+                } else {
+                    cell.fx.push(Some(remainder.to_string()));
+                }
             }
             res.push(cell);
         }

@@ -22,10 +22,10 @@ pub fn channel_tags() -> Vec<String> {
     }
     res
 }
-
+/// also includes note cut "--" and note release "=="
 pub fn music_notes() -> Vec<String> {
     vec![
-        "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#",
+        ".", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "--", "==",
     ]
     .iter()
     .map(|x| x.to_string())
@@ -34,18 +34,27 @@ pub fn music_notes() -> Vec<String> {
 
 pub fn hex_numbers() -> Vec<String> {
     vec![
-    ".","0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
+        ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
     ]
     .iter()
-    .map(|x| format!("{}HEX",x))
+    .map(|x| format!("{}", x))
     .collect()
+}
+
+/// includes the '#' used in the noise channel
+pub fn oct_numbers() -> Vec<String> {
+    vec![".", "0", "1", "2", "3", "4", "5", "6", "#"]
+        .iter()
+        .map(|x| format!("{}", x))
+        .collect()
 }
 
 pub fn fx_letters() -> Vec<String> {
     vec![
-    "A","B","C","D","E","F","G","H","I","S","P"
+        ".", "A", "B", "C", "D", "E", "F", "G", "H", "I", "S", "P", "0", "1", "2", "3", "4", "5",
+        "6", "7", "8", "9",
     ]
     .iter()
-    .map(|x| format!("{}FX",x))
+    .map(|x| format!("{}", x))
     .collect()
 }

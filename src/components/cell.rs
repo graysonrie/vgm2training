@@ -2,11 +2,11 @@
 pub struct Cell {
     pub row_n: u32,
     pub row_hex: String,
-    pub note: String,
-    pub note_octave: u32,
-    pub note_volume: String,
-    pub instrument: String,
-    pub fx: Vec<String>,
+    pub note: Option<String>,
+    pub note_octave: Option<char>,
+    pub note_volume: Option<String>,
+    pub instrument: Option<String>,
+    pub fx: Vec<Option<String>>,
 }
 
 impl Cell {
@@ -14,10 +14,10 @@ impl Cell {
         return Self {
             row_n: 0,
             row_hex: String::from(""),
-            note: String::from(""),
-            note_octave: 0,
-            note_volume: String::from(""),
-            instrument: String::from(""),
+            note: None,
+            note_octave: None,
+            note_volume: None,
+            instrument: None,
             fx: vec![],
         };
     }
