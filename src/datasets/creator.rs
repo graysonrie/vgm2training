@@ -1,5 +1,5 @@
 use crate::components::{parser, song::Song};
-use std::collections::BTreeSet;
+use crate::datasets::tokenizer::StandardTokenizer;
 
 /*
 Assumes the songs to be made with the VRC6 chip.
@@ -12,10 +12,13 @@ pub fn standard_many(songs: &[Song]) {
     }
 }
 
+/// Standard dataset follows this format:
+/// [<StartOfSong><StartOfMeasure>(A) (HEX0)(HEXA) (HEXF) (P)(HEX7)(HEXF) (S)(HEX0)(HEX4) (.)(HEX.)(HEX.)]
 pub fn standard(song: &Song) {
     // 2a03 is implied
+    let max_n_fx = 3; // max number of effects in a single cell
     let chip = "VRC6";
-    let mut tokens: BTreeSet<&str> = BTreeSet::new();
+    let tokenizer = StandardTokenizer::new();
 
     for cell in song.channel_iter(0) {
         println!("{}", cell.note);
