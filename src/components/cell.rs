@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct Cell {
     pub row_n: u32,
     pub row_hex: String,
