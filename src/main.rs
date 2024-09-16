@@ -6,9 +6,10 @@ use crate::datasets::creator;
 
 fn main() {
     let songs = parser::parse_txt(r"input\ze backuo (2).txt");
-    if let Some(song) = songs.get(0){
-        creator::standard(song);
-    }
+    creator::export_standard(&songs, "output.json");
+    //if let Some(song) = songs.get(0){
+        //creator::standard(song);
+    //}
     //for mut song in songs{
         //song.line_up_patterns();
     //}

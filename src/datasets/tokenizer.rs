@@ -12,17 +12,18 @@ const VOL_SUFFIX: &str = "VOL";
 const FX_SUFFIX: &str = "FX";
 const BLANK: &str = ".";
 
-trait Tokenizer {
+pub trait Tokenizer {
     fn encode(&self, item: &str) -> u32;
     fn decode(&self, index: u32) -> &str;
 }
 
 pub struct StandardTokenizer {
     pub tokens: BTreeSet<Token>,
+    max_num_fx: usize,
 }
 
 impl StandardTokenizer {
-    pub fn new() -> Self {
+    pub fn new(max_num_fx: usize) -> Self {
         let mut tokens: Vec<String> = vec![
             "<StartOfSong>",
             "<EndOfSong>",
@@ -33,6 +34,7 @@ impl StandardTokenizer {
         .map(|x| x.to_string())
         .collect();
         tokens.extend(channel_tags());
+        tokens.extend(misc_tokens());
         tokens.extend(music_notes().suffix(NOTE_SUFFIX));
         tokens.extend(oct_numbers().suffix(OCT_SUFFIX));
         tokens.extend(hex_numbers().suffix(VOL_SUFFIX));
@@ -45,7 +47,10 @@ impl StandardTokenizer {
             .map(|(i, x)| Token::new(i as u32, x.to_string()))
             .collect();
         tree.extend(ext);
-        Self { tokens: tree }
+        Self {
+            tokens: tree,
+            max_num_fx,
+        }
     }
     /// for example, passing in P7F would yield (PFX)(7HEX)(FHEX)
     pub fn tokenize_hex(&self, hex: &str) -> Vec<u32> {
@@ -101,11 +106,11 @@ impl StandardTokenizer {
         );
 
         // tokenize effects
-        for fx in cell.fx.iter() {
+        for fx in cell.fx.iter().take(self.max_num_fx) {
             //println!("{:#?}",fx);
             let fx_tokens: Vec<u32> = fx
                 .as_deref()
-                .unwrap_or("..")
+                .unwrap_or("...")
                 .chars()
                 .map(|x| {
                     let mut s = String::new();
@@ -114,7 +119,16 @@ impl StandardTokenizer {
                     self.encode(&s)
                 })
                 .collect();
+
             res.extend(fx_tokens);
+        }
+        // fill the remaining context
+        for _ in cell.fx.len()..self.max_num_fx {
+            // 3 times since one empty effect is made of three '.' tokens
+            let mut temp = String::new();
+            temp.push('.');
+            temp.push_str(FX_SUFFIX);
+            res.extend(std::iter::repeat_with(|| self.encode(&temp)).take(3));
         }
 
         res
