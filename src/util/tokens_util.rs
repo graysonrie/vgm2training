@@ -47,12 +47,38 @@ pub fn music_notes() -> Vec<String> {
     .collect()
 }
 
+/// doesn't include noise notes
+pub fn music_notes_raw() -> Vec<String> {
+    vec![
+        ".", "A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "--", "=="
+    ]
+    .iter()
+    .map(|x| x.to_string())
+    .collect()
+}
+
 pub fn hex_numbers() -> Vec<String> {
     vec![
         ".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
     ]
     .iter()
-    .map(|x| format!("{}", x))
+    .map(|x| x.to_string())
+    .collect()
+}
+
+pub fn hex_numbers_char() -> Vec<char> {
+    vec![
+        '.','0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F',
+    ]
+}
+
+/// same as `hex_numbers()` without the blank token '.'
+pub fn hex_numbers_raw() -> Vec<String> {
+    vec![
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
+    ]
+    .iter()
+    .map(|x| x.to_string())
     .collect()
 }
 
@@ -60,8 +86,19 @@ pub fn hex_numbers() -> Vec<String> {
 pub fn oct_numbers() -> Vec<String> {
     vec![".", "0", "1", "2", "3", "4", "5", "6", "7", "#"]
         .iter()
-        .map(|x| format!("{}", x))
+        .map(|x| x.to_string())
         .collect()
+}
+
+pub fn oct_numbers_char() -> Vec<char> {
+    vec!['.', '0', '1','2','3','4','5','6','7','#']
+}
+
+/// seeing as the max val for an instrument is '3F'
+pub fn starting_inst_numbers() -> Vec<char>{
+    vec![
+        '.','0','1','2','3'
+    ]
 }
 
 pub fn fx_letters() -> Vec<String> {
@@ -70,6 +107,7 @@ pub fn fx_letters() -> Vec<String> {
         "1", "2", "3", "4", "5", "6", "7", "8", "9",
     ]
     .iter()
-    .map(|x| format!("{}", x))
+    .map(|x| x.to_string())
     .collect()
 }
+

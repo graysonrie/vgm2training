@@ -1,8 +1,8 @@
-use super::tokenizer::Tokenizer;
+use crate::datasets::tokenizer::Tokenizer;
 use crate::components::song::Song;
 use crate::datasets::{
     chipview::{self, TagOps},
-    tokenizer::StandardTokenizer,
+    tokenizers::standard::StandardTokenizer,
 };
 use crate::util::tokens_util::*;
 use rayon::prelude::*;
@@ -15,11 +15,12 @@ Assumes the songs to be made with the VRC6 chip.
 Change this in the future
 */
 
-pub fn export_standard(songs: &[Song], file_path: &str) {
+pub fn export(songs: &[Song], file_path: &str, vocab_path: &str) {
+    let tokenizer = StandardTokenizer::new(1);
     let tokens: Vec<Vec<u32>> = songs
         .par_iter()
         .map(|x| {
-            let t = standard(x);
+            let t = create(x, &tokenizer);
             t
         })
         .collect();
@@ -31,14 +32,18 @@ pub fn export_standard(songs: &[Song], file_path: &str) {
         .expect("Unable to write data");
 
     println!("Tokenized songs successfully saved to '{}'", file_path);
+    // save the vocab
+    let json_data = serde_json::to_string_pretty(&tokenizer.tokens_decode).unwrap();
+    let mut file = File::create(vocab_path).expect("Unable to create file");
+    file.write_all(json_data.as_bytes())
+        .expect("Unable to write data");
 }
 
 /// Standard dataset follows this format:
 /// [<StartOfSong><StartOfMeasure>(A)(0) (HEX0)(HEXA) (HEXF) (P)(HEX7)(HEXF) (S)(HEX0)(HEX4) (.)(HEX.)(HEX.)]
-pub fn standard(song: &Song) -> Vec<u32> {
+fn create(song: &Song, tokenizer: &StandardTokenizer) -> Vec<u32> {
     // 2a03 is implied
     let soundchip = "VRC6";
-    let tokenizer = StandardTokenizer::new(3);
 
     let mut tokens: Vec<u32> = Vec::new();
     tokens.push(tokenizer.encode(SONG_START));
