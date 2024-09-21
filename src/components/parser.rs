@@ -175,11 +175,11 @@ pub fn parse_txt(path: &str) -> Vec<Song> {
                                 song.num_channels = row.len();
                             }
                             for _ in 0..row.len() {
-                                channels.push(Channel::new(pattern.hex.to_string()));
+                                channels.push(Channel::new(0, pattern.hex.to_string(),vec![]));
                             }
                         }
 
-                        for i in 0..channels.len()-1 {
+                        for i in 0..channels.len() {
       
                             if let Some(cell) = row.get_mut(i).unwrap().take() {
                                 match channels.get_mut(i) {

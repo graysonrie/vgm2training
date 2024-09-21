@@ -1,14 +1,18 @@
 use crate::components::cell::Cell;
+
+#[derive(Clone)]
 pub struct Channel {
+    pub index: usize,
     pub pattern_hex: String,
     pub cells: Vec<Cell>,
 }
 
 impl Channel {
-    pub fn new(pattern_hex: String) -> Self {
+    pub fn new(index: usize, pattern_hex: String, cells: Vec<Cell>) -> Self {
         return Self {
+            index,
             pattern_hex,
-            cells: vec![],
+            cells,
         };
     }
     pub fn parse_row(row: &str) -> Vec<Cell> {
@@ -74,5 +78,57 @@ impl Channel {
             res.push(cell);
         }
         res
+    }
+    ///good for putting a song in double time back to normal time. Irreverible action
+    ///
+    /// Example:
+    /// passing in `2` for `step_size` has the same effect as shrinking the pattern in tracker software
+    pub fn shrink(&mut self, step_size: usize) {
+        let mut count = 0;
+        self.cells.retain(|_| {
+            let keep = count % step_size == 0;
+            count += 1;
+            keep
+        });
+    }
+    /// step_size must be a number greater than 1. Returns true if successful
+    pub fn expand(&mut self, step_size: usize) -> bool {
+        if step_size < 2 {
+            return false;
+        }
+        for i in 0..self.cells.len() {
+            if i % 2 == 1 {
+                for _ in 0..step_size - 1 {
+                    self.cells.insert(i, Cell::new());
+                }
+            }
+        }
+        true
+    }
+    /// adds the given channel onto the end of this one
+    pub fn append(&mut self, channel: &mut Channel) {
+        self.cells.append(&mut channel.cells);
+    }
+    /// splits this channel in two and returns the extra channel
+    pub fn halve(&mut self) -> Channel {
+        let mid = self.cells.len() / 2;
+        let cells = self.cells.split_off(mid);
+        Channel::new(self.index + 1, self.pattern_hex.clone(), cells)
+    }
+    /// returns the average distance between notes for this channel
+    pub fn notes_avg_dist(&self) -> u32 {
+        let mut dists: Vec<u32> = Vec::new();
+        let mut d: u32 = 0;
+        for cell in self.cells.iter() {
+            if (cell.note_octave.is_some()){
+                dists.push(d);
+                d = 0;
+            }
+            d += 1;
+        }
+        if dists.len() == 0{ // avoid division by 0
+            return self.cells.len() as u32;
+        }
+        dists.iter().sum::<u32>()/(dists.len() as u32)
     }
 }

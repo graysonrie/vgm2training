@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct OrderEntry {
     pub number:u32,
     pub hex: String,
@@ -10,6 +11,7 @@ impl OrderEntry{
     }
 }
 
+#[derive(Clone)]
 pub struct Order {
     pub orders: Vec<OrderEntry>,
 }
