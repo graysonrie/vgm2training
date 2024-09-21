@@ -13,17 +13,10 @@ pub struct CompactTokenizer {
 
 impl CompactTokenizer {
     pub fn new(max_num_fx: usize, limit_octaves: bool) -> Self {
-        let mut tokens: Vec<String> = vec![
-            "<StartOfSong>",
-            "<EndOfSong>",
-            "<StartOfMeasure>",
-            "<EndOfMeasure>",
-        ]
-        .iter()
-        .map(|x| x.to_string())
-        .collect();
-        tokens.extend(channel_tags());
+        let mut tokens: Vec<String> = Vec::new();
+        // misc tokens must go first since they contain special tokens
         tokens.extend(misc_tokens());
+        tokens.extend(channel_tags());
         tokens.extend(CompactTokenizer::gen_all_possible(
             max_num_fx,
             limit_octaves,

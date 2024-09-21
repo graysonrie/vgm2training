@@ -1,41 +1,34 @@
-use indexmap::IndexMap;
 use crate::components::cell::Cell;
+use crate::datasets::tokenizer::*;
 use crate::util::tokens_util::*;
 use crate::util::vec_ext::VecExt;
-use crate::datasets::tokenizer::*;
+use indexmap::IndexMap;
 
 pub struct StandardTokenizer {
-    pub tokens_decode: IndexMap<u32,String>,
+    pub tokens_decode: IndexMap<u32, String>,
     pub tokens_encode: IndexMap<String, u32>,
     max_num_fx: usize,
 }
 
 impl StandardTokenizer {
     pub fn new(max_num_fx: usize) -> Self {
-        let mut tokens: Vec<String> = vec![
-            "<StartOfSong>",
-            "<EndOfSong>",
-            "<StartOfMeasure>",
-            "<EndOfMeasure>",
-        ]
-        .iter()
-        .map(|x| x.to_string())
-        .collect();
-        tokens.extend(channel_tags());
+        let mut tokens: Vec<String> = Vec::new();
+        // misc tokens must go first since they contain special tokens
         tokens.extend(misc_tokens());
+        tokens.extend(channel_tags());
         tokens.extend(music_notes().suffix(NOTE_SUFFIX));
         tokens.extend(oct_numbers().suffix(OCT_SUFFIX));
         tokens.extend(hex_numbers().suffix(VOL_SUFFIX));
         tokens.extend(hex_numbers().suffix(INST_SUFFIX));
         tokens.extend(fx_letters().suffix(FX_SUFFIX));
-        let tokens_decode: IndexMap<u32,String> = tokens
+        let tokens_decode: IndexMap<u32, String> = tokens
             .iter()
             .enumerate()
             .map(|(i, x)| (i as u32, x.to_string()))
             .collect();
         let mut tokens_encode: IndexMap<String, u32> = IndexMap::new();
-        for token in &tokens_decode{
-            tokens_encode.insert(token.1.clone(),token.0.clone());
+        for token in &tokens_decode {
+            tokens_encode.insert(token.1.clone(), token.0.clone());
         }
         Self {
             tokens_decode,

@@ -35,7 +35,7 @@ impl Pattern {
     /// adds the given pattern onto the end of this one
     pub fn append_pattern(&mut self,pattern:&mut Pattern){
         for channel in self.channels.iter_mut(){
-            println!("{}", channel.cells.len());
+            assert!(channel.cells.len() != 0,"Channel shouldn't have 0 cells");
             for other_channel in pattern.channels.iter_mut(){
                 channel.append(other_channel);
             } 
